@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Speech-to-Veseme App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Veseme</title>
+
+    <!-- Progressive Web App Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+
+    <!-- Link to external CSS -->
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/gh/syl22-00/pocketsphinx.js@latest/dist/pocketsphinx.min.js"></script>
-    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <h1>Audio-to-Veseme Animation</h1>
-        <button id="recordButton">🎤 Record Speech</button>
-        <p id="phonemeOutput">Detected Phonemes: </p>
-        <div id="animationOutput"></div>
+        <h1>Text to Veseme</h1>
+
+        <textarea id="inputText" placeholder="Enter your text here"></textarea>
+        
+        <button id="convertButton">Convert</button>
+
+        <div id="output" class="output-box">
+            <!-- The veseme group sequence will appear here -->
+        </div>
     </div>
+
+    <!-- Link to external JavaScript -->
+    <script src="script.js"></script>
+
+    <!-- Register service worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js')
+              .then(registration => console.log('Service Worker registered:', registration))
+              .catch(error => console.error('Service Worker registration failed:', error));
+        }
+    </script>
 </body>
 </html>
