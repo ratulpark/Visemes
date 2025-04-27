@@ -31,23 +31,35 @@ const vesemeMapping = {
 const imagePath = './images/'; // Path where veseme group images are stored
 
 function animateVesemeImages(vesemeGroups, word) {
-    // Create a container for the animation
-    const animationContainer = document.createElement("div");
-    animationContainer.classList.add("animation-container");
+    // Create a container for the word and animation
+    const wordContainer = document.createElement("div");
+    wordContainer.classList.add("word-container");
+    
+    const wordLabel = document.createElement("span");
+    wordLabel.textContent = `${word}: `; // Display the word
+    wordLabel.classList.add("word-label");
+    wordContainer.appendChild(wordLabel);
 
     const imgElement = document.createElement("img");
     imgElement.classList.add("veseme-image");
-    animationContainer.appendChild(imgElement);
+    wordContainer.appendChild(imgElement);
 
     let currentIndex = 0;
+    let loopCount = 0;
 
-    // Start the infinite animation loop
-    setInterval(() => {
+    // Start the animation
+    const animationInterval = setInterval(() => {
         imgElement.src = `${imagePath}${vesemeGroups[currentIndex]}.png`; // Update the image source
         currentIndex = (currentIndex + 1) % vesemeGroups.length; // Loop through images
+        if (currentIndex === 0) {
+            loopCount++; // Increment loop count after completing one full cycle
+        }
+        if (loopCount === 2) { // Stop after 2 loops
+            clearInterval(animationInterval); // Stop the animation
+        }
     }, 500); // 0.5 seconds per frame
 
-    return animationContainer; // Return the animation container
+    return wordContainer; // Return the word container
 }
 
 function textToVesemeAnimation(text) {
