@@ -1,0 +1,93 @@
+/* Center the page and apply stylish designs */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0; /* Light gray background */
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    margin: 20px;
+    padding: 15px;
+    border: 5px solid;
+    border-image: linear-gradient(to right, green, purple, blue) 1;
+    background-color: #ffffff; /* White background for contrast */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    border-radius: 8px; /* Rounded corners */
+}
+
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+textarea {
+    width: calc(100% - 20px); /* Adjust to fit within the border */
+    height: 100px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 2px dashed #2196F3; /* Blue dashed border */
+    resize: none;
+    font-size: 16px;
+    border-radius: 5px;
+    box-sizing: border-box; /* Ensures padding is included in the width calculation */
+}
+
+button {
+    padding: 10px 20px;
+    border: 2px solid #FF9800; /* Orange border */
+    background-color: #FFEB3B; /* Yellow background */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+button:hover {
+    background-color: #FFC107; /* Darker yellow on hover */
+}
+
+.output-box {
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px solid #4CAF50; /* Green border */
+    background-color: #e8f5e9; /* Light green background */
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    white-space: pre-line; /* Preserve line breaks for text output */
+    border-radius: 5px;
+}
+
+/* Veseme-specific styles */
+.veseme-container {
+    display: inline-flex;
+    align-items: center; /* Align text and image */
+    margin-right: 10px;
+}
+
+.veseme-image {
+    width: 66px;
+    height: 66px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.close-text {
+    color: red;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.word-container {
+    margin-bottom: 10px; /* Add space between words */
+}
