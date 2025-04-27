@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Veseme</title>
+
+ <!-- Progressive Web App Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+
+    <style>
+        /* Center the page and apply stylish designs */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0; /* Light gray background */
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin: 20px;
+            padding: 15px;
+            border: 5px solid;
+            border-image: linear-gradient(to right, green, purple, blue) 1;
+            background-color: #ffffff; /* White background for contrast */
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            border-radius: 8px; /* Rounded corners */
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: calc(100% - 20px); /* Adjust to fit within the border */
+            height: 100px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 2px dashed #2196F3; /* Blue dashed border */
+            resize: none;
+            font-size: 16px;
+            border-radius: 5px;
+            box-sizing: border-box; /* Ensures padding is included in the width calculation */
+        }
+
+        button {
+            padding: 10px 20px;
+            border: 2px solid #FF9800; /* Orange border */
+            background-color: #FFEB3B; /* Yellow background */
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+
+        button:hover {
+            background-color: #FFC107; /* Darker yellow on hover */
+        }
+
+        .output-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #4CAF50; /* Green border */
+            background-color: #e8f5e9; /* Light green background */
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            white-space: pre-line; /* Preserve line breaks for text output */
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Veseme</h1>
+
+        <textarea id="inputText" placeholder="Enter your text here"></textarea>
+        
+        <button id="convertButton">Convert</button>
+
+        <div id="output" class="output-box">
+            <!-- The veseme group sequence will appear here -->
+        </div>
+    </div>
+
+<script>
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => console.log('Service Worker registered:', registration))
+      .catch(error => console.error('Service Worker registration failed:', error));
+  }
+    // Define phoneme-to-veseme mapping and image paths
+    const vesemeMapping = {
+        'sh': 'grp_th',
+        'ch': 'grp_hjchj',
+        'th': 'grp_th',
+        'ng': 'grp_kgh',
+        'p': 'grp_pbm',
+        'b': 'grp_pbm',
+        'm': 'grp_pbm',
+        'k': 'grp_kgh',
+        'g': 'grp_kgh',
+        'h': 'grp_hjchj',
+        'a': 'grp_aou',
+        'o': 'grp_aou',
+        'u': 'grp_aou',
+        'e': 'grp_ei',
+        'i': 'grp_ei',
+        'w': 'grp_ou',
+        'r': 'grp_kgh',
+        'f': 'grp_fv',
+        'v': 'grp_fv',
+        't': 'grp_tdnszl',
+        'd': 'grp_tdnszl',
+        'n': 'grp_tdnszl',
+        's': 'grp_tdnszl',
+        'z': 'grp_tdnszl',
+        'l': 'grp_tdnszl',
+        'y': 'grp_aou'
+    };
+
+    const imagePath = './images/'; // Path where veseme group images are stored
+
+    function textToVesemeImages(text) {
+        const words = text.toLowerCase().split(/\s+/);
+
+        const mappedWords = words.map(word => {
+            let processedGroups = new Set();
+            let i = 0;
+
+            while (i < word.length) {
+                const cluster = word.substring(i, i + 2);
+                if (vesemeMapping[cluster]) {
+                    processedGroups.add(vesemeMapping[cluster]);
+                    i += 2;
+                } else if (vesemeMapping[word[i]]) {
+                    processedGroups.add(vesemeMapping[word[i]]);
+                    i += 1;
+                } else {
+                    i += 1;
+                }
+            }
+
+            // Generate HTML for images and "close" labels
+            const imagesHtml = Array.from(processedGroups).map(group => {
+                return `
+                    <span class="veseme-container">
+                        <img src="${imagePath}${group}.png" alt="${group}" class="veseme-image" />
+                        <span class="close-text" onclick="this.parentElement.remove()"> (close) </span>
+                    </span>
+                `;
+            }).join(' ');
+
+            return `<div class="word-container">${imagesHtml}</div>`;
+        });
+
+        return mappedWords.join(''); // Join the words to render output
+    }
+
+    document.getElementById("convertButton").addEventListener("click", function() {
+        const inputText = document.getElementById("inputText").value.trim();
+        const outputDiv = document.getElementById("output");
+
+        if (inputText === "") {
+            outputDiv.textContent = "Please enter some text.";
+            return;
+        }
+
+        const vesemeOutput = textToVesemeImages(inputText);
+        outputDiv.innerHTML = vesemeOutput; // Render output with images and labels
+    });
+</script>
+
+<style>
+    .veseme-container {
+        display: inline-flex;
+        align-items: center; /* Align text and image */
+        margin-right: 10px;
+    }
+
+    .veseme-image {
+        width: 66px;
+        height: 66px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .close-text {
+        color: red;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    .word-container {
+        margin-bottom: 10px; /* Add space between words */
+    }
+</style>
