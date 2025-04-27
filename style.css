@@ -70,10 +70,16 @@ button:hover {
     border-radius: 10px;
 }
 
-.close-text {
-    color: red;
-    font-size: 14px;
-    cursor: pointer;
-    margin-left: 10px;
+/* Styling for the word container and labels */
+.word-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /* Space between rows */
+}
+
+.word-label {
+    font-size: 16px;
     font-weight: bold;
+    color: #333;
+    margin-right: 10px; /* Space between label and image */
 }
