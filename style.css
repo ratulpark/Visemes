@@ -1,4 +1,4 @@
-/* Center the page and apply stylish designs */
+/* Styling for the body and container */
 body {
     display: flex;
     justify-content: center;
@@ -55,39 +55,25 @@ button:hover {
     background-color: #FFC107; /* Darker yellow on hover */
 }
 
-.output-box {
-    margin-top: 20px;
-    padding: 10px;
-    border: 2px solid #4CAF50; /* Green border */
-    background-color: #e8f5e9; /* Light green background */
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    white-space: pre-line; /* Preserve line breaks for text output */
-    border-radius: 5px;
-}
-
-/* Veseme-specific styles */
-.veseme-container {
+/* Animation container and image styling */
+.animation-container {
     display: inline-flex;
-    align-items: center; /* Align text and image */
-    margin-right: 10px;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 20px;
 }
 
 .veseme-image {
-    width: 66px;
-    height: 66px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
 }
 
 .close-text {
     color: red;
     font-size: 14px;
     cursor: pointer;
-    margin-left: 5px;
-}
-
-.word-container {
-    margin-bottom: 10px; /* Add space between words */
+    margin-left: 10px;
+    font-weight: bold;
 }
