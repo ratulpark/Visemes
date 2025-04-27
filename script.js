@@ -30,40 +30,51 @@ const vesemeMapping = {
 
 const imagePath = './images/'; // Path where veseme group images are stored
 
-function textToVesemeImages(text) {
+function animateVesemeImages(vesemeGroups, word) {
+    // Create a container for the animation
+    const animationContainer = document.createElement("div");
+    animationContainer.classList.add("animation-container");
+
+    const imgElement = document.createElement("img");
+    imgElement.classList.add("veseme-image");
+    animationContainer.appendChild(imgElement);
+
+    let currentIndex = 0;
+
+    // Start the infinite animation loop
+    setInterval(() => {
+        imgElement.src = `${imagePath}${vesemeGroups[currentIndex]}.png`; // Update the image source
+        currentIndex = (currentIndex + 1) % vesemeGroups.length; // Loop through images
+    }, 500); // 0.5 seconds per frame
+
+    return animationContainer; // Return the animation container
+}
+
+function textToVesemeAnimation(text) {
     const words = text.toLowerCase().split(/\s+/);
 
-    const mappedWords = words.map(word => {
-        let processedGroups = new Set();
+    const animationElements = words.map(word => {
+        let processedGroups = [];
         let i = 0;
 
         while (i < word.length) {
             const cluster = word.substring(i, i + 2);
             if (vesemeMapping[cluster]) {
-                processedGroups.add(vesemeMapping[cluster]);
+                processedGroups.push(vesemeMapping[cluster]);
                 i += 2;
             } else if (vesemeMapping[word[i]]) {
-                processedGroups.add(vesemeMapping[word[i]]);
+                processedGroups.push(vesemeMapping[word[i]]);
                 i += 1;
             } else {
                 i += 1;
             }
         }
 
-        // Generate HTML for images and "close" labels
-        const imagesHtml = Array.from(processedGroups).map(group => {
-            return `
-                <span class="veseme-container">
-                    <img src="${imagePath}${group}.png" alt="${group}" class="veseme-image" />
-                    <span class="close-text"> (close) </span>
-                </span>
-            `;
-        }).join(' ');
-
-        return `<div class="word-container">${imagesHtml}</div>`;
+        // Create animation for the word
+        return animateVesemeImages(processedGroups, word);
     });
 
-    return mappedWords.join(''); // Join the words to render output
+    return animationElements; // Return all animation elements
 }
 
 document.getElementById("convertButton").addEventListener("click", function() {
@@ -75,13 +86,9 @@ document.getElementById("convertButton").addEventListener("click", function() {
         return;
     }
 
-    const vesemeOutput = textToVesemeImages(inputText);
-    outputDiv.innerHTML = vesemeOutput; // Render output with images and labels
+    const animationElements = textToVesemeAnimation(inputText);
 
-    // Add event listeners to dynamically created "close-text" spans
-    document.querySelectorAll('.close-text').forEach(closeSpan => {
-        closeSpan.addEventListener('click', function () {
-            this.parentElement.remove(); // Remove the parent container
-        });
-    });
+    // Clear previous output and add animations
+    outputDiv.innerHTML = "";
+    animationElements.forEach(element => outputDiv.appendChild(element));
 });
