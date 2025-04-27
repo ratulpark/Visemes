@@ -28,6 +28,10 @@ self.addEventListener("fetch", event => {
                 // Return cached resource or fetch from network if not cached
                 return response || fetch(event.request);
             })
+            .catch(error => {
+                console.error("Error during fetch:", error);
+                throw error; // Prevent unhandled promise rejection
+            })
     );
 });
 
