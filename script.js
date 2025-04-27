@@ -1,78 +1,106 @@
-// Define phoneme-to-veseme mapping
-const phonemeToVeseme = {
-    "HH": "grp_kgh",
-    "EH": "grp_ei",
-    "L": "grp_tdnszl",
-    "OW": "grp_aou",
-    "P": "grp_pbm",
-    "B": "grp_pbm",
-    "M": "grp_pbm",
-    "K": "grp_kgh",
-    "G": "grp_kgh",
-    "A": "grp_aou",
-    "O": "grp_aou",
-    "U": "grp_aou",
-    "E": "grp_ei",
-    "I": "grp_ei",
-    "W": "grp_ou",
-    "R": "grp_kgh",
-    "F": "grp_fv",
-    "V": "grp_fv",
-    "T": "grp_tdnszl",
-    "D": "grp_tdnszl",
-    "N": "grp_tdnszl",
-    "S": "grp_tdnszl",
-    "Z": "grp_tdnszl",
-    "L": "grp_tdnszl",
-    "Y": "grp_aou"
+// Define phoneme-to-veseme mapping and image paths
+const vesemeMapping = {
+    'sh': 'grp_th',
+    'ch': 'grp_hjchj',
+    'th': 'grp_th',
+    'ng': 'grp_kgh',
+    'p': 'grp_pbm',
+    'b': 'grp_pbm',
+    'm': 'grp_pbm',
+    'k': 'grp_kgh',
+    'g': 'grp_kgh',
+    'h': 'grp_hjchj',
+    'a': 'grp_aou',
+    'o': 'grp_aou',
+    'u': 'grp_aou',
+    'e': 'grp_ei',
+    'i': 'grp_ei',
+    'w': 'grp_ou',
+    'r': 'grp_kgh',
+    'f': 'grp_fv',
+    'v': 'grp_fv',
+    't': 'grp_tdnszl',
+    'd': 'grp_tdnszl',
+    'n': 'grp_tdnszl',
+    's': 'grp_tdnszl',
+    'z': 'grp_tdnszl',
+    'l': 'grp_tdnszl',
+    'y': 'grp_aou'
 };
 
-// Path to veseme images
-const imagePath = "./images/";
+const imagePath = './images/'; // Path where veseme group images are stored
 
-// Function to animate vesemes (runs once, no loop)
-function animateVesemes(phonemes) {
-    const mappedVesemes = phonemes.map(phon => phonemeToVeseme[phon] || "unknown");
-    const animationOutput = document.getElementById("animationOutput");
-
-    // Clear previous output (only one animation pane)
-    animationOutput.innerHTML = "";
+function animateVesemeImages(vesemeGroups, word) {
+    // Create a container for the word and animation
+    const wordContainer = document.createElement("div");
+    wordContainer.classList.add("word-container");
+    
+    const wordLabel = document.createElement("span");
+    wordLabel.textContent = `${word}: `; // Display the word
+    wordLabel.classList.add("word-label");
+    wordContainer.appendChild(wordLabel);
 
     const imgElement = document.createElement("img");
     imgElement.classList.add("veseme-image");
-    animationOutput.appendChild(imgElement);
+    wordContainer.appendChild(imgElement);
 
     let currentIndex = 0;
+    let loopCount = 0;
 
-    function displayNextVeseme() {
-        if (currentIndex < mappedVesemes.length) {
-            imgElement.src = `${imagePath}${mappedVesemes[currentIndex]}.png`;
-            currentIndex++;
-            setTimeout(displayNextVeseme, 500); // Show each veseme for 0.5 sec
+    // Start the animation
+    const animationInterval = setInterval(() => {
+        imgElement.src = `${imagePath}${vesemeGroups[currentIndex]}.png`; // Update the image source
+        currentIndex = (currentIndex + 1) % vesemeGroups.length; // Loop through images
+        if (currentIndex === 0) {
+            loopCount++; // Increment loop count after completing one full cycle
         }
+        if (loopCount === 2) { // Stop after 2 loops
+            clearInterval(animationInterval); // Stop the animation
+        }
+    }, 500); // 0.5 seconds per frame
+
+    return wordContainer; // Return the word container
+}
+
+function textToVesemeAnimation(text) {
+    const words = text.toLowerCase().split(/\s+/);
+
+    const animationElements = words.map(word => {
+        let processedGroups = [];
+        let i = 0;
+
+        while (i < word.length) {
+            const cluster = word.substring(i, i + 2);
+            if (vesemeMapping[cluster]) {
+                processedGroups.push(vesemeMapping[cluster]);
+                i += 2;
+            } else if (vesemeMapping[word[i]]) {
+                processedGroups.push(vesemeMapping[word[i]]);
+                i += 1;
+            } else {
+                i += 1;
+            }
+        }
+
+        // Create animation for the word
+        return animateVesemeImages(processedGroups, word);
+    });
+
+    return animationElements; // Return all animation elements
+}
+
+document.getElementById("convertButton").addEventListener("click", function() {
+    const inputText = document.getElementById("inputText").value.trim();
+    const outputDiv = document.getElementById("output");
+
+    if (inputText === "") {
+        outputDiv.textContent = "Please enter some text.";
+        return;
     }
 
-    displayNextVeseme(); // Start animation sequence
-}
+    const animationElements = textToVesemeAnimation(inputText);
 
-// Function to start speech recognition
-function startSpeechRecognition() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-            const audioContext = new AudioContext();
-            const source = audioContext.createMediaStreamSource(stream);
-            const recognizer = new pocketsphinx.Recognizer();
-
-            recognizer.onresult = event => {
-                const detectedPhonemes = event.results;
-                document.getElementById("phonemeOutput").textContent = "Detected Phonemes: " + detectedPhonemes.join(" ");
-                animateVesemes(detectedPhonemes);
-            };
-
-            source.connect(recognizer);
-        })
-        .catch(err => console.error("Microphone error:", err));
-}
-
-// Event listener for record button
-document.getElementById("recordButton").addEventListener("click", startSpeechRecognition);
+    // Clear previous output and add animations
+    outputDiv.innerHTML = "";
+    animationElements.forEach(element => outputDiv.appendChild(element));
+});
